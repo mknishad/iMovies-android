@@ -1,4 +1,4 @@
-package com.mknishad.imovies.presentation.movielist
+package com.mknishad.imovies.presentation.wishlist
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -11,16 +11,16 @@ import com.mknishad.imovies.presentation.components.MovieList
 
 
 @Composable
-fun MovieListScreen(onMovieClick: (Movie) -> Unit) {
-    val viewModel = hiltViewModel<MovieListViewModel>()
+fun WishListScreen(onMovieClick: (Movie) -> Unit) {
+    val viewModel = hiltViewModel<WishListViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    MovieListContent(state, onMovieClick, viewModel::toggleWishlist)
+    WishListContent(state, onMovieClick, viewModel::toggleWishlist)
 }
 
 @Composable
-fun MovieListContent(
-    state: MovieListState,
+fun WishListContent(
+    state: WishListState,
     onMovieClick: (Movie) -> Unit,
     onFavoriteClick: (Movie) -> Unit
 ) {

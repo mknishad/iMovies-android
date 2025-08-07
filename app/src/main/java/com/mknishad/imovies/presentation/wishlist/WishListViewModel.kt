@@ -1,9 +1,9 @@
-package com.mknishad.imovies.presentation.movielist
+package com.mknishad.imovies.presentation.wishlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mknishad.imovies.domain.model.Movie
-import com.mknishad.imovies.domain.usecases.GetMoviesFromDatabaseUseCase
+import com.mknishad.imovies.domain.usecases.GetWishlistUseCase
 import com.mknishad.imovies.domain.usecases.ToggleFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -15,11 +15,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class MovieListViewModel @Inject constructor(
-    private val getMoviesFromDatabase: GetMoviesFromDatabaseUseCase,
+class WishListViewModel @Inject constructor(
+    private val getWishlist: GetWishlistUseCase,
     private val toggleFavorite: ToggleFavoriteUseCase
 ) : ViewModel() {
-    private val _state = MutableStateFlow(MovieListState())
+    private val _state = MutableStateFlow(WishListState())
     val state = _state.asStateFlow()
 
     init {
@@ -27,7 +27,7 @@ class MovieListViewModel @Inject constructor(
     }
 
     private fun getMovies() {
-        getMoviesFromDatabase().onEach { movies ->
+        getWishlist().onEach { movies ->
             _state.update {
                 it.copy(movies = movies)
             }

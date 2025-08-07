@@ -10,5 +10,5 @@ data class Movie(
     val runtime: String,
     val title: String,
     val year: String,
-    val isFavorite: Boolean = false
+    val isFavorite: Int = 0
 )

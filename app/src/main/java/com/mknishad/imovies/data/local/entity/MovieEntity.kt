@@ -18,5 +18,5 @@ data class MovieEntity(
     val runtime: String,
     val title: String,
     val year: String,
-    val isFavorite: Boolean = false
+    var isFavorite: Int = 0
 )

@@ -1,4 +1,4 @@
-package com.mknishad.imovies.presentation.movielist.components
+package com.mknishad.imovies.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,6 +13,7 @@ import com.mknishad.imovies.domain.model.Movie
 fun MovieList(
     movies: List<Movie>,
     onMovieClick: (Movie) -> Unit,
+    onFavoriteClick: (Movie) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -26,8 +27,11 @@ fun MovieList(
         ) { movie ->
             MovieListItem(
                 movie = movie,
-                onItemClick = { selectedMovie ->
-                    onMovieClick(selectedMovie)
+                onItemClick = {
+                    onMovieClick(it)
+                },
+                onFavoriteClick = {
+                    onFavoriteClick(it)
                 }
             )
         }

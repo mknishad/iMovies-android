@@ -1,4 +1,4 @@
-package com.mknishad.imovies.presentation.movielist.components
+package com.mknishad.imovies.presentation.components
 
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat

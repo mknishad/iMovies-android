@@ -1,4 +1,4 @@
-package com.mknishad.imovies.presentation.movielist.components // Or your preferred package
+package com.mknishad.imovies.presentation.components // Or your preferred package
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,16 +12,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,12 +36,15 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.mknishad.imovies.R
 import com.mknishad.imovies.domain.model.Movie
 import com.mknishad.imovies.presentation.ui.theme.IMoviesTheme
 
 @Composable
 fun MovieListItem(
-    movie: Movie, onItemClick: (Movie) -> Unit
+    movie: Movie,
+    onItemClick: (Movie) -> Unit,
+    onFavoriteClick: (Movie) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -52,8 +62,7 @@ fun MovieListItem(
             // Movie Poster
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current).data(movie.posterUrl)
-                    .crossfade(true)
-                    .build(),
+                    .crossfade(true).build(),
                 contentDescription = movie.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -70,13 +79,35 @@ fun MovieListItem(
                 modifier = Modifier.weight(1f), // Takes remaining space
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text(
-                    text = movie.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = movie.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                    IconButton(
+                        onClick = { onFavoriteClick(movie) }) {
+                        Icon(
+                            imageVector = if (movie.isFavorite == 1) {
+                                Icons.Default.Favorite
+                            } else {
+                                Icons.Default.FavoriteBorder
+                            },
+                            contentDescription = if (movie.isFavorite == 1) {
+                                stringResource(R.string.remove_from_favorites)
+                            } else {
+                                stringResource(R.string.add_to_favorites)
+                            },
+                            tint = Color.Red
+                        )
+                    }
+                }
 
                 Text(
                     text = "Year: ${movie.year}",
@@ -128,6 +159,6 @@ private fun MovieListItemPreview() {
                 genres = listOf("Action", "Comedy", "Mockumentary"),
                 director = "Dr. Compose",
                 actors = "Render McState, Effect Handler, Pixel Perfect"
-            ), onItemClick = {})
+            ), onItemClick = {}, onFavoriteClick = {})
     }
 }

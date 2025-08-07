@@ -17,11 +17,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.mknishad.imovies.R
+import com.mknishad.imovies.presentation.moviedetails.MovieDetailsScreen
 import com.mknishad.imovies.presentation.movielist.MovieListScreen
 import com.mknishad.imovies.presentation.splash.SplashScreen
 
@@ -33,8 +36,11 @@ fun IMovieApp(
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
     // Get the name of the current screen
+    val currentRoute = backStackEntry?.destination?.route ?: Screen.MovieList.name
+    // Extract the base route name before the '?'
+    val baseRoute = currentRoute.substringBefore('?')
     val currentScreen = Screen.valueOf(
-        backStackEntry?.destination?.route ?: Screen.MovieList.name
+        baseRoute
     )
 
     Scaffold(
@@ -62,7 +68,22 @@ fun IMovieApp(
                     })
             }
             composable(route = Screen.MovieList.name) {
-                MovieListScreen()
+                MovieListScreen(
+                    onMovieClick = { movie ->
+                        navController.navigate(Screen.MovieDetails.name + "?movieId=${movie.id}")
+                    }
+                )
+            }
+            composable(
+                route = Screen.MovieDetails.name + "?movieId={movieId}",
+                arguments = listOf(
+                    navArgument(name = "movieId") {
+                        type = NavType.IntType
+                        defaultValue = -1
+                    }
+                )
+            ) {
+                MovieDetailsScreen()
             }
         }
     }

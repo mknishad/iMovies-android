@@ -23,4 +23,8 @@ class MovieRepositoryImpl @Inject constructor(
     override fun getMoviesFromDatabase(): Flow<List<Movie>> {
         return dao.getAllMovies().map { entities -> entities.map { it.toMovie() } }
     }
+
+    override suspend fun getMovieById(movieId: Int): Movie? {
+        return dao.getMovieById(movieId)?.toMovie()
+    }
 }

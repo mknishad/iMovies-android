@@ -6,22 +6,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mknishad.imovies.domain.model.Movie
 import com.mknishad.imovies.presentation.movielist.components.MovieList
 
 
 @Composable
-fun MovieListScreen(modifier: Modifier = Modifier) {
+fun MovieListScreen(onMovieClick: (Movie) -> Unit) {
     val viewModel = hiltViewModel<MovieListViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    MovieListContent(state)
+    MovieListContent(state, onMovieClick)
 }
 
 @Composable
-fun MovieListContent(state: MovieListState) {
+fun MovieListContent(state: MovieListState, onMovieClick: (Movie) -> Unit) {
     MovieList(
         movies = state.movies,
-        onMovieSelected = { },
+        onMovieClick = { onMovieClick(it) },
         modifier = Modifier.fillMaxSize()
     )
 }

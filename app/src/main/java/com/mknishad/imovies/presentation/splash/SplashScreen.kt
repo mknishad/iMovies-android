@@ -48,7 +48,7 @@ fun SplashContent(
         Image(
             painter = painterResource(R.mipmap.ic_launcher_foreground),
             contentDescription = stringResource(R.string.app_name),
-            modifier = Modifier.size(200.dp)
+            modifier = Modifier.size(300.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
 

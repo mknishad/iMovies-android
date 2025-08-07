@@ -12,7 +12,7 @@ import com.mknishad.imovies.domain.model.Movie
 @Composable
 fun MovieList(
     movies: List<Movie>,
-    onMovieSelected: (Movie) -> Unit,
+    onMovieClick: (Movie) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -27,7 +27,7 @@ fun MovieList(
             MovieListItem(
                 movie = movie,
                 onItemClick = { selectedMovie ->
-                    onMovieSelected(selectedMovie)
+                    onMovieClick(selectedMovie)
                 }
             )
         }

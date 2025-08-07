@@ -1,7 +1,9 @@
 package com.mknishad.imovies.domain.repository
 
-import com.mknishad.imovies.domain.model.MovieResponse
+import com.mknishad.imovies.domain.model.Movie
+import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {
-    suspend fun getMovies() : MovieResponse
+    fun getMoviesFromDatabase(): Flow<List<Movie>>
+    suspend fun getMoviesFromNetwork(): List<Movie>
 }

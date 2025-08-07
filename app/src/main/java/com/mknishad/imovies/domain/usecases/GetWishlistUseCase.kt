@@ -5,6 +5,6 @@ import com.mknishad.imovies.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetMovieByIdUseCase @Inject constructor(private val repository: MovieRepository) {
-    operator fun invoke(movieId: Int): Flow<Movie?> = repository.getMovieById(movieId)
+class GetWishlistUseCase @Inject constructor(private val repository: MovieRepository) {
+    operator fun invoke(): Flow<List<Movie>> = repository.getWishlist()
 }

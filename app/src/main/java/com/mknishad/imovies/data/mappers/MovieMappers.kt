@@ -46,3 +46,18 @@ fun MovieEntity.toMovie(): Movie {
         isFavorite = isFavorite
     )
 }
+
+fun Movie.toMovieEntity(): MovieEntity {
+    return MovieEntity(
+        actors = actors,
+        director = director,
+        genres = genres,
+        id = id,
+        plot = plot,
+        posterUrl = posterUrl,
+        runtime = runtime,
+        title = title,
+        year = year,
+        isFavorite = isFavorite
+    )
+}

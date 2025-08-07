@@ -1,10 +1,9 @@
-package com.mknishad.imovies.presentation.moviedetails
+package com.mknishad.imovies.presentation.wishlist
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mknishad.imovies.domain.model.Movie
-import com.mknishad.imovies.domain.usecases.GetMovieByIdUseCase
+import com.mknishad.imovies.domain.usecases.GetWishlistUseCase
 import com.mknishad.imovies.domain.usecases.ToggleFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -16,24 +15,23 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class MovieDetailsViewModel @Inject constructor(
-    private val getMovieById: GetMovieByIdUseCase,
-    private val toggleFavorite: ToggleFavoriteUseCase,
-    savedStateHandle: SavedStateHandle
+class WishListViewModel @Inject constructor(
+    private val getWishlist: GetWishlistUseCase,
+    private val toggleFavorite: ToggleFavoriteUseCase
 ) : ViewModel() {
-    private val _state = MutableStateFlow(MovieDetailsState())
+    private val _state = MutableStateFlow(WishListState())
     val state = _state.asStateFlow()
 
     init {
-        savedStateHandle.get<Int>("movieId")?.let { movieId ->
-            if (movieId != -1) {
-                getMovieById(movieId).onEach { movie ->
-                    _state.update {
-                        it.copy(movie = movie)
-                    }
-                }.launchIn(viewModelScope)
+        getMovies()
+    }
+
+    private fun getMovies() {
+        getWishlist().onEach { movies ->
+            _state.update {
+                it.copy(movies = movies)
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
     fun toggleWishlist(movie: Movie) {

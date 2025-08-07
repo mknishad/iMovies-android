@@ -39,14 +39,11 @@ fun IMovieApp(
 
     Scaffold(
         topBar = {
-            if (currentScreen != Screen.Splash) {
-                IMovieAppBar(
-                    currentScreen = currentScreen,
-                    canNavigateBack = navController.previousBackStackEntry != null,
-                    navigateUp = { navController.navigateUp() })
-            }
-        }
-    ) { innerPadding ->
+            IMovieAppBar(
+                currentScreen = currentScreen,
+                canNavigateBack = navController.previousBackStackEntry != null,
+                navigateUp = { navController.navigateUp() })
+        }) { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = Screen.Splash.name,
@@ -62,8 +59,7 @@ fun IMovieApp(
                                 inclusive = true
                             }
                         }
-                    }
-                )
+                    })
             }
             composable(route = Screen.MovieList.name) {
                 MovieListScreen()
@@ -84,9 +80,17 @@ fun IMovieAppBar(
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
-        title = { Text(stringResource(currentScreen.title)) },
+        title = {
+            if (currentScreen != Screen.Splash) {
+                Text(stringResource(currentScreen.title))
+            }
+        },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = if (currentScreen != Screen.Splash) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.surface
+            }
         ),
         modifier = modifier,
         navigationIcon = {
@@ -98,5 +102,6 @@ fun IMovieAppBar(
                     )
                 }
             }
-        })
+        }
+    )
 }

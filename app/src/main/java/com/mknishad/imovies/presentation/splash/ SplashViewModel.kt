@@ -7,7 +7,6 @@ import com.mknishad.imovies.domain.usecases.GetMoviesFromDatabaseUseCase
 import com.mknishad.imovies.domain.usecases.GetMoviesFromNetworkUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -60,7 +59,7 @@ class SplashViewModel @Inject constructor(
                     }
                 }.launchIn(viewModelScope)
             } else {
-                delay(2000)
+                //delay(2000)
                 _state.update {
                     it.copy(movies = getMoviesFromDatabase().first(), isLoading = false)
                 }

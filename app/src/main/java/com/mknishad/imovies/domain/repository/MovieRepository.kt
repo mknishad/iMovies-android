@@ -7,6 +7,6 @@ interface MovieRepository {
     suspend fun getMoviesFromNetwork(): List<Movie>
     fun getMoviesFromDatabase(): Flow<List<Movie>>
     fun getWishlist(): Flow<List<Movie>>
-    suspend fun getMovieById(movieId: Int): Movie?
+    fun getMovieById(movieId: Int): Flow<Movie?>
     suspend fun toggleFavorite(movie: Movie)
 }

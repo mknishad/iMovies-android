@@ -16,6 +16,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,8 +28,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,6 +41,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.mknishad.imovies.R
 import com.mknishad.imovies.domain.model.Movie
 import com.mknishad.imovies.presentation.moviedetails.components.GenreChip
 import com.mknishad.imovies.presentation.moviedetails.components.SectionTitle
@@ -45,11 +53,11 @@ fun MovieDetailsScreen() {
     val viewModel = hiltViewModel<MovieDetailsViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    MovieDetailsContent(state)
+    MovieDetailsContent(state, viewModel::toggleWishlist)
 }
 
 @Composable
-fun MovieDetailsContent(state: MovieDetailsState) {
+fun MovieDetailsContent(state: MovieDetailsState, onFavoriteClick: (Movie) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -119,6 +127,27 @@ fun MovieDetailsContent(state: MovieDetailsState) {
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
+                IconButton(
+                    onClick = {
+                        state.movie?.let {
+                            onFavoriteClick(it)
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = if (state.movie?.isFavorite == 1) {
+                            Icons.Default.Favorite
+                        } else {
+                            Icons.Default.FavoriteBorder
+                        },
+                        contentDescription = if (state.movie?.isFavorite == 1) {
+                            stringResource(R.string.remove_from_favorites)
+                        } else {
+                            stringResource(R.string.add_to_favorites)
+                        },
+                        tint = Color.Red
+                    )
+                }
             }
         }
 
@@ -174,7 +203,8 @@ private fun MovieDetailsContentPreview() {
                     director = "Dr. Compose",
                     actors = "Render McState, Effect Handler, Pixel Perfect"
                 )
-            )
+            ),
+            onFavoriteClick = {}
         )
     }
 }

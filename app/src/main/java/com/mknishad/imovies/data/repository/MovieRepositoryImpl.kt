@@ -27,8 +27,8 @@ class MovieRepositoryImpl @Inject constructor(
         return dao.getWishlist().map { entities -> entities.map { it.toMovie() } }
     }
 
-    override suspend fun getMovieById(movieId: Int): Movie? {
-        return dao.getMovieById(movieId)?.toMovie()
+    override fun getMovieById(movieId: Int): Flow<Movie?> {
+        return dao.getMovieById(movieId).map { it?.toMovie() }
     }
 
     override suspend fun toggleFavorite(movie: Movie) {

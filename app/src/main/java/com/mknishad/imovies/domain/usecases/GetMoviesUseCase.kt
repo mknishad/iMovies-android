@@ -10,7 +10,7 @@ import java.io.IOException
 import javax.inject.Inject
 
 class GetMoviesUseCase @Inject constructor(private val repository: MovieRepository) {
-    operator fun invoke(coinId: String): Flow<Resource<MovieResponse>> = flow {
+    operator fun invoke(): Flow<Resource<MovieResponse>> = flow {
         try {
             emit(Resource.Loading())
             val coin = repository.getMovies()

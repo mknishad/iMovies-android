@@ -1,5 +1,8 @@
 package com.mknishad.imovies.di
 
+import android.app.Application
+import androidx.room.Room
+import com.mknishad.imovies.data.local.MovieDatabase
 import com.mknishad.imovies.data.remote.MovieApi
 import com.mknishad.imovies.data.repository.MovieRepositoryImpl
 import com.mknishad.imovies.domain.repository.MovieRepository
@@ -27,7 +30,17 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMovieRepository(api: MovieApi): MovieRepository {
-        return MovieRepositoryImpl(api)
+    fun provideMovieDatabase(app: Application): MovieDatabase {
+        return Room.databaseBuilder(
+            app,
+            MovieDatabase::class.java,
+            MovieDatabase.DB_NAME
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideMovieRepository(api: MovieApi, db: MovieDatabase): MovieRepository {
+        return MovieRepositoryImpl(api, db.movieDao)
     }
 }

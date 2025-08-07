@@ -8,7 +8,7 @@ espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.9.2"
 activityCompose = "1.10.1"
 composeBom = "2025.07.00"
-ksp = "2.1.20-2.0.0"
+ksp = "2.2.0-2.0.2"
 coroutines = "1.10.2"
 coroutinesLifecycle = "2.9.2"
 hiltAndroid = "2.57"
@@ -17,6 +17,7 @@ retrofit = "3.0.0"
 okhttp = "5.1.0"
 coil = "3.3.0"
 paging = "3.3.6"
+room = "2.7.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -61,9 +62,14 @@ coil-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", versio
 paging-runtime = { group = "androidx.paging", name = "paging-runtime-ktx", version.ref = "paging" }
 paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
 
+# Room
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
+#room = { id = "androidx.room", version.ref = "room" }

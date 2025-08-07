@@ -1,6 +1,5 @@
-package com.mknishad.imovies.ui.theme
+package com.mknishad.imovies.presentation.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

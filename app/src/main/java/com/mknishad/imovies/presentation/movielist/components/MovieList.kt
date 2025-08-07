@@ -5,14 +5,20 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.mknishad.imovies.domain.model.Movie
 
 @Composable
-fun MovieList(movies: List<Movie>, onMovieSelected: (Movie) -> Unit) {
+fun MovieList(
+    movies: List<Movie>,
+    onMovieSelected: (Movie) -> Unit,
+    modifier: Modifier = Modifier
+) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp) // Space between items
+        verticalArrangement = Arrangement.spacedBy(12.dp), // Space between items
+        modifier = modifier
     ) {
         items(
             items = movies,

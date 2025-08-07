@@ -1,5 +1,6 @@
 package com.mknishad.imovies.presentation.movielist
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -17,9 +18,10 @@ fun MovieListScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun MovieListContent(state: MovieListState, modifier: Modifier = Modifier) {
+fun MovieListContent(state: MovieListState) {
     MovieList(
         movies = state.movies,
-        onMovieSelected = { }
+        onMovieSelected = { },
+        modifier = Modifier.fillMaxSize()
     )
 }

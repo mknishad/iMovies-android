@@ -23,6 +23,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.mknishad.imovies.R
 import com.mknishad.imovies.presentation.movielist.MovieListScreen
+import com.mknishad.imovies.presentation.splash.SplashScreen
 
 
 @Composable
@@ -38,23 +39,34 @@ fun IMovieApp(
 
     Scaffold(
         topBar = {
-            IMovieAppBar(
-                currentScreen = currentScreen,
-                canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() })
-        }) { innerPadding ->
+            if (currentScreen != Screen.Splash) {
+                IMovieAppBar(
+                    currentScreen = currentScreen,
+                    canNavigateBack = navController.previousBackStackEntry != null,
+                    navigateUp = { navController.navigateUp() })
+            }
+        }
+    ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.MovieList.name,
+            startDestination = Screen.Splash.name,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            composable(route = Screen.MovieList.name) {
-                MovieListScreen(
-                    modifier = Modifier
-                        .fillMaxSize()
+            composable(route = Screen.Splash.name) {
+                SplashScreen(
+                    onNavigateForward = {
+                        navController.navigate(Screen.MovieList.name) {
+                            popUpTo(Screen.Splash.name) {
+                                inclusive = true
+                            }
+                        }
+                    }
                 )
+            }
+            composable(route = Screen.MovieList.name) {
+                MovieListScreen()
             }
         }
     }

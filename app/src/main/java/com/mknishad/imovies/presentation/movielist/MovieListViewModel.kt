@@ -100,6 +100,7 @@ class MovieListViewModel @Inject constructor(
         _searchQueryInternal.value = query // Update the internal flow that's debounced
     }
 
+    // Handle toggle search action
     fun onToggleSearch() {
         val newSearchState = !_state.value.isSearchActive
         _state.update { it.copy(isSearchActive = newSearchState) }
@@ -109,6 +110,7 @@ class MovieListViewModel @Inject constructor(
         }
     }
 
+    // Handle toggle wishlist action
     fun toggleWishlist(movie: Movie) {
         viewModelScope.launch {
             toggleFavorite(movie)

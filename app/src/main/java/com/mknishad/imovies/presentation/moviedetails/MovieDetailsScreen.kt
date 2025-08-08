@@ -193,13 +193,11 @@ fun MovieDetailsContent(
             // Actors
             SectionTitle(title = "Cast")
             Text(
-                // Assuming actors is a comma-separated string. If it's a list, adapt accordingly.
                 text = state.movie?.actors ?: "N/A",
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
 
-            // Add more sections as needed (e.g., Ratings, Reviews, Similar Movies)
             Spacer(modifier = Modifier.height(24.dp)) // Extra space at the end
         }
     }

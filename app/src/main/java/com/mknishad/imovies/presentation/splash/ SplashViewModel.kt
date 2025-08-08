@@ -23,12 +23,12 @@ class SplashViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     init {
-        getMovies()
+        getMovies() // Fetch movies on initialization
     }
 
     fun getMovies() {
         viewModelScope.launch {
-            if (getMovieCount() == 0) {
+            if (getMovieCount() == 0) { // If no movies in database, fetch from network
                 getMoviesFromNetwork().onEach { resource ->
                     when (resource) {
                         is Resource.Success -> {

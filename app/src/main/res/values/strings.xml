@@ -13,4 +13,7 @@
     <string name="filter_by_genre">Filter by genre</string>
     <string name="close_search">Close search</string>
     <string name="open_search">Open search</string>
+    <string name="search_movies">Search movies...</string>
+    <string name="search_icon">Search Icon</string>
+    <string name="clear_search">Clear search</string>
 </resources>

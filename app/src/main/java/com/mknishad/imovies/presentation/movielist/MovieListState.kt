@@ -19,7 +19,8 @@ data class MovieListState(
     val searchQuery: String = "", // State for search query
     val isSearchActive: Boolean = false, // To control visibility/focus of search bar
 
-    val wishlistCount: Int = 0, // State for wishlist count
+    // State for wishlist count
+    val wishlistCount: Int = 0,
 
     // Loading/Error states for the main list
     val isLoading: Boolean = true, // For initial load or full screen loading

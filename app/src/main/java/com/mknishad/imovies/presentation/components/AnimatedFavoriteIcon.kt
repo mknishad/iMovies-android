@@ -10,6 +10,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import com.mknishad.imovies.R
 
 @Composable
 fun AnimatedFavoriteIcon(
@@ -23,17 +25,17 @@ fun AnimatedFavoriteIcon(
             targetState = isFavorite,
             animationSpec = tween(durationMillis = 300),
             label = "FavoriteIconCrossfade"
-        ) { favorited ->
-            if (favorited) {
+        ) { favorite ->
+            if (favorite) {
                 Icon(
                     imageVector = Icons.Filled.Favorite,
-                    contentDescription = "Remove from Wishlist",
+                    contentDescription = stringResource(R.string.remove_from_favorites),
                     tint = tint
                 )
             } else {
                 Icon(
                     imageVector = Icons.Filled.FavoriteBorder,
-                    contentDescription = "Add to Wishlist",
+                    contentDescription = stringResource(R.string.add_to_favorites),
                     tint = tint
                 )
             }

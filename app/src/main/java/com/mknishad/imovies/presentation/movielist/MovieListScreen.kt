@@ -124,12 +124,12 @@ fun MovieListContent(
                                 .weight(1f) // Takes available space
                                 .padding(horizontal = 8.dp, vertical = 2.dp)
                                 .focusRequester(focusRequester),
-                            placeholder = { Text("Search movies...") },
+                            placeholder = { Text(stringResource(R.string.search_movies)) },
                             singleLine = true,
                             leadingIcon = {
                                 Icon(
                                     Icons.Filled.Search,
-                                    contentDescription = "Search Icon"
+                                    contentDescription = stringResource(R.string.search_icon)
                                 )
                             },
                             trailingIcon = {
@@ -137,20 +137,17 @@ fun MovieListContent(
                                     IconButton(onClick = { onSearchQueryChanged("") }) {
                                         Icon(
                                             Icons.Filled.Close,
-                                            contentDescription = "Clear search"
+                                            contentDescription = stringResource(R.string.clear_search)
                                         )
                                     }
                                 }
                             },
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                            keyboardActions = KeyboardActions(onSearch = {
-                                keyboardController?.hide()
-                                // Optionally, trigger search immediately or rely on debounce
-                            }),
-                            /*colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = Color.Transparent, // Or your theme color
-                                unfocusedBorderColor = Color.Transparent
-                            )*/
+                            keyboardActions = KeyboardActions(
+                                onSearch = {
+                                    keyboardController?.hide()
+                                }
+                            ),
                         )
                     }
 

@@ -71,7 +71,6 @@ fun GenreDropdownAction(
                     text = { Text(genre.name) },
                     onClick = {
                         onGenreSelected(genre)
-                        // onDismiss() is called within onGenreSelected in ViewModel in this setup
                     }
                 )
             }

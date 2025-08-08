@@ -15,30 +15,41 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.mknishad.imovies.R
+import com.mknishad.imovies.domain.model.Genre
 import com.mknishad.imovies.domain.model.Movie
 import com.mknishad.imovies.presentation.components.MovieList
 import com.mknishad.imovies.presentation.main.Screen
+import com.mknishad.imovies.presentation.movielist.components.GenreDropdownAction
 
 
 @Composable
 fun MovieListScreen(onMovieClick: (Movie) -> Unit, onWishlistClick: () -> Unit) {
     val viewModel = hiltViewModel<MovieListViewModel>()
-    val movies = viewModel.movies.collectAsLazyPagingItems()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val movies = state.movies.collectAsLazyPagingItems()
 
     MovieListContent(
         movies = movies,
         onMovieClick = onMovieClick,
         onWishlistClick = onWishlistClick,
-        onFavoriteClick = viewModel::toggleWishlist
+        onFavoriteClick = viewModel::toggleWishlist,
+        availableGenres = state.availableGenres,
+        selectedGenre = state.selectedGenre,
+        isExpanded = state.isDropdownExpanded,
+        onToggleDropdown = viewModel::toggleGenreDropdown,
+        onGenreSelected = viewModel::onGenreSelected,
+        onDismiss = viewModel::dismissGenreDropdown
     )
 }
 
@@ -48,7 +59,14 @@ fun MovieListContent(
     movies: LazyPagingItems<Movie>,
     onMovieClick: (Movie) -> Unit,
     onWishlistClick: () -> Unit,
-    onFavoriteClick: (Movie) -> Unit
+    onFavoriteClick: (Movie) -> Unit,
+    availableGenres: List<Genre>,
+    selectedGenre: Genre?,
+    isExpanded: Boolean,
+    onToggleDropdown: () -> Unit,
+    onGenreSelected: (Genre) -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Scaffold(
         topBar = {
@@ -58,6 +76,14 @@ fun MovieListContent(
                 },
                 colors = TopAppBarDefaults.mediumTopAppBarColors(MaterialTheme.colorScheme.primaryContainer),
                 actions = {
+                    GenreDropdownAction(
+                        availableGenres = availableGenres,
+                        selectedGenre = selectedGenre,
+                        isExpanded = isExpanded,
+                        onToggleDropdown = onToggleDropdown,
+                        onGenreSelected = onGenreSelected,
+                        onDismiss = onDismiss
+                    )
                     IconButton(onClick = { onWishlistClick() }) {
                         Icon(
                             imageVector = Icons.Filled.Favorite,

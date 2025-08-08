@@ -45,6 +45,27 @@ class MovieRepositoryImpl @Inject constructor(
         ).flow
     }
 
+    override fun getMoviesByGenre(selectedGenre: String?): Flow<PagingData<Movie>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20,
+                enablePlaceholders = false,
+                initialLoadSize = 20
+            ),
+            pagingSourceFactory = {
+                if (selectedGenre.isNullOrBlank() || selectedGenre == "All") {
+                    movieDao.getAllMovies()
+                } else {
+                    // Prepare the query for LIKE. We need to match the genre as a whole word
+                    // or part of the comma-separated list.
+                    // Example: if genre is "Action", query should be "%Action%"
+                    val genreQuery = "%$selectedGenre%"
+                    movieDao.getMoviesByGenre(genreQuery)
+                }
+            }
+        ).flow
+    }
+
     override fun getWishlist(): Flow<PagingData<Movie>> {
         return Pager(
             config = PagingConfig(

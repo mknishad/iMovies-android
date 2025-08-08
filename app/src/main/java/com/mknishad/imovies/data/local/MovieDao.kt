@@ -25,6 +25,10 @@ interface MovieDao {
     @Query("SELECT * FROM movies ORDER BY year DESC, title ASC")
     fun getAllMovies(): PagingSource<Int, Movie>
 
+    // Get movies by genre, ordered by year and title
+    @Query("SELECT * FROM movies WHERE genres LIKE :genreQuery ORDER BY year DESC, title ASC")
+    fun getMoviesByGenre(genreQuery: String): PagingSource<Int, Movie>
+
     // Get favorite movies, ordered by year and title
     @Query("SELECT * FROM movies WHERE isFavorite = 1 ORDER BY year DESC, title ASC")
     fun getWishlist(): PagingSource<Int, Movie>

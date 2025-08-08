@@ -1,4 +1,4 @@
-package com.mknishad.imovies.presentation
+package com.mknishad.imovies.presentation.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

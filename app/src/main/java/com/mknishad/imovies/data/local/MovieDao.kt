@@ -18,19 +18,19 @@ interface MovieDao {
     suspend fun insertMovies(movies: List<MovieEntity>)
 
     // Get movie count to quickly check if DB is empty
-    @Query("SELECT COUNT(*) FROM movieentity")
+    @Query("SELECT COUNT(*) FROM movies")
     suspend fun getMovieCount(): Int
 
     // Get all movies, ordered by year and title
-    @Query("SELECT * FROM movieentity ORDER BY year DESC, title ASC")
+    @Query("SELECT * FROM movies ORDER BY year DESC, title ASC")
     fun getAllMovies(): PagingSource<Int, Movie>
 
     // Get favorite movies, ordered by year and title
-    @Query("SELECT * FROM movieentity WHERE isFavorite = 1 ORDER BY year DESC, title ASC")
+    @Query("SELECT * FROM movies WHERE isFavorite = 1 ORDER BY year DESC, title ASC")
     fun getWishlist(): PagingSource<Int, Movie>
 
     // Get movie by ID
-    @Query("SELECT * FROM movieentity WHERE id = :movieId")
+    @Query("SELECT * FROM movies WHERE id = :movieId")
     fun getMovieById(movieId: Int): Flow<MovieEntity?>
 
     // Add to / remove from the wishlist

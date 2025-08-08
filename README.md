@@ -86,7 +86,7 @@ https://raw.githubusercontent.com/erik-sytnyk/movies-list/master/db.json
 ## Installation & Setup
 1. **Clone the repo**
    ```bash
-   git@github.com:mknishad/iMovies-android.git
+   git clone git@github.com:mknishad/iMovies-android.git
    cd iMovies-android
    ```
 

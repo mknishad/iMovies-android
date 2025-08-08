@@ -159,6 +159,9 @@ private fun MovieListItemPreview() {
                 genres = listOf("Action", "Comedy", "Mockumentary"),
                 director = "Dr. Compose",
                 actors = "Render McState, Effect Handler, Pixel Perfect"
-            ), onItemClick = {}, onFavoriteClick = {})
+            ),
+            onItemClick = {},
+            onFavoriteClick = {}
+        )
     }
 }

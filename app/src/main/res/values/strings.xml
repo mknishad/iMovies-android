@@ -11,4 +11,6 @@
     <string name="no_movies_found">No movies found.</string>
     <string name="error_loading_more">Error loading more.</string>
     <string name="filter_by_genre">Filter by genre</string>
+    <string name="close_search">Close search</string>
+    <string name="open_search">Open search</string>
 </resources>

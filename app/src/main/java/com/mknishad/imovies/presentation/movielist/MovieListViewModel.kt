@@ -7,22 +7,33 @@ import androidx.paging.cachedIn
 import com.mknishad.imovies.domain.model.Genre
 import com.mknishad.imovies.domain.model.Movie
 import com.mknishad.imovies.domain.usecases.GetGenresUseCase
+import com.mknishad.imovies.domain.usecases.GetMoviesByGenreAndQueryUseCase
 import com.mknishad.imovies.domain.usecases.GetMoviesByGenreUseCase
 import com.mknishad.imovies.domain.usecases.ToggleFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class MovieListViewModel @Inject constructor(
     private val getMoviesByGenre: GetMoviesByGenreUseCase,
+    private val getMoviesByGenreAndQuery: GetMoviesByGenreAndQueryUseCase,
     private val getGenres: GetGenresUseCase,
     private val toggleFavorite: ToggleFavoriteUseCase
 ) : ViewModel() {
@@ -33,10 +44,36 @@ class MovieListViewModel @Inject constructor(
     // if only other parts of the state (like dropdown visibility) change.
     private var currentMoviesFlow: Flow<PagingData<Movie>> = emptyFlow()
 
+    // Separate flow for search query to apply debounce
+    private val _searchQueryInternal = MutableStateFlow("")
+
     init {
         loadInitialGenres()
-        // Initialize movies flow based on the initial state (null genre means all)
-        updateMoviesForGenre(null)
+
+        // Combine selectedGenre and debounced searchQuery to trigger movie updates
+        viewModelScope.launch {
+            combine(
+                _state.map { it.selectedGenre }.distinctUntilChanged(),
+                _searchQueryInternal.debounce(500L) // Debounce search query by 500ms
+            ) { genre, query ->
+                Pair(genre, query)
+            }.flatMapLatest { (genre, query) ->
+                val genreToFilter = if (genre == Genre.ALL) null else genre?.name
+                _state.update { it.copy(isLoading = true) } // Show loading for new filter/search
+                getMoviesByGenreAndQuery(genreToFilter, query)
+                    .cachedIn(viewModelScope)
+            }.collect { pagingData ->
+                _state.update {
+                    it.copy(
+                        movies = flowOf(pagingData), // Wrap in flowOf for consistency if needed, or assign directly
+                        isLoading = false,
+                        error = null
+                    )
+                }
+            }
+        }
+        // Initialize with default/empty search
+        _searchQueryInternal.value = ""
     }
 
     private fun loadInitialGenres() {
@@ -50,6 +87,20 @@ class MovieListViewModel @Inject constructor(
                     )
                 }
             }.launchIn(viewModelScope)
+        }
+    }
+
+    fun onSearchQueryChanged(query: String) {
+        _state.update { it.copy(searchQuery = query) }
+        _searchQueryInternal.value = query // Update the internal flow that's debounced
+    }
+
+    fun onToggleSearch() {
+        val newSearchState = !_state.value.isSearchActive
+        _state.update { it.copy(isSearchActive = newSearchState) }
+        if (!newSearchState) {
+            // If search is deactivated, clear query and refresh list
+            onSearchQueryChanged("")
         }
     }
 
@@ -84,11 +135,10 @@ class MovieListViewModel @Inject constructor(
                     it.copy(
                         selectedGenre = genre,
                         isDropdownExpanded = false, // Close dropdown
-                        isLoading = true // Indicate loading for new genre
                     )
                 }
                 // Trigger movie list update for the new genre
-                updateMoviesForGenre(genre)
+                //updateMoviesForGenre(genre)
             }
         }
     }

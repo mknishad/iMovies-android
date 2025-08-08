@@ -48,9 +48,9 @@ class MovieRepositoryImpl @Inject constructor(
     override fun getMoviesByGenre(selectedGenre: String?): Flow<PagingData<Movie>> {
         return Pager(
             config = PagingConfig(
-                pageSize = 20,
-                enablePlaceholders = false,
-                initialLoadSize = 20
+                pageSize = 10,
+                enablePlaceholders = true,
+                initialLoadSize = 10
             ),
             pagingSourceFactory = {
                 if (selectedGenre.isNullOrBlank() || selectedGenre == "All") {
@@ -62,6 +62,25 @@ class MovieRepositoryImpl @Inject constructor(
                     val genreQuery = "%$selectedGenre%"
                     movieDao.getMoviesByGenre(genreQuery)
                 }
+            }
+        ).flow
+    }
+
+    override fun getMoviesByGenreAndQuery(
+        genreName: String?,
+        searchQuery: String?
+    ): Flow<PagingData<Movie>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 10,
+                enablePlaceholders = true,
+                initialLoadSize = 10
+            ),
+            pagingSourceFactory = {
+                // Prepare query: if blank, treat as null for DAO
+                val finalQuery = searchQuery?.takeIf { it.isNotBlank() }
+                val finalGenre = genreName.takeIf { it != null }
+                movieDao.getMoviesByGenreAndQuery(finalGenre, finalQuery)
             }
         ).flow
     }

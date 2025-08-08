@@ -1,25 +1,40 @@
 package com.mknishad.imovies.presentation.movielist
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
@@ -49,7 +64,11 @@ fun MovieListScreen(onMovieClick: (Movie) -> Unit, onWishlistClick: () -> Unit) 
         isExpanded = state.isDropdownExpanded,
         onToggleDropdown = viewModel::toggleGenreDropdown,
         onGenreSelected = viewModel::onGenreSelected,
-        onDismiss = viewModel::dismissGenreDropdown
+        onDismiss = viewModel::dismissGenreDropdown,
+        isSearchActive = state.isSearchActive,
+        searchQuery = state.searchQuery,
+        onSearchQueryChanged = viewModel::onSearchQueryChanged,
+        onToggleSearch = viewModel::onToggleSearch
     )
 }
 
@@ -66,8 +85,20 @@ fun MovieListContent(
     onToggleDropdown: () -> Unit,
     onGenreSelected: (Genre) -> Unit,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
+    isSearchActive: Boolean,
+    searchQuery: String,
+    onSearchQueryChanged: (String) -> Unit,
+    onToggleSearch: () -> Unit
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(isSearchActive) {
+        if (isSearchActive) {
+            focusRequester.requestFocus()
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -76,6 +107,59 @@ fun MovieListContent(
                 },
                 colors = TopAppBarDefaults.mediumTopAppBarColors(MaterialTheme.colorScheme.primaryContainer),
                 actions = {
+                    AnimatedVisibility(
+                        visible = isSearchActive,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        OutlinedTextField(
+                            value = searchQuery,
+                            onValueChange = { onSearchQueryChanged(it) },
+                            modifier = Modifier
+                                .weight(1f) // Takes available space
+                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                                .focusRequester(focusRequester),
+                            placeholder = { Text("Search movies...") },
+                            singleLine = true,
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Filled.Search,
+                                    contentDescription = "Search Icon"
+                                )
+                            },
+                            trailingIcon = {
+                                if (searchQuery.isNotEmpty()) {
+                                    IconButton(onClick = { onSearchQueryChanged("") }) {
+                                        Icon(
+                                            Icons.Filled.Close,
+                                            contentDescription = "Clear search"
+                                        )
+                                    }
+                                }
+                            },
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                            keyboardActions = KeyboardActions(onSearch = {
+                                keyboardController?.hide()
+                                // Optionally, trigger search immediately or rely on debounce
+                            }),
+                            /*colors = TextFieldDefaults.outlinedTextFieldColors(
+                                focusedBorderColor = Color.Transparent, // Or your theme color
+                                unfocusedBorderColor = Color.Transparent
+                            )*/
+                        )
+                    }
+
+                    // Search Toggle Button
+                    IconButton(onClick = { onToggleSearch() }) {
+                        Icon(
+                            imageVector = if (isSearchActive) Icons.Filled.Close else Icons.Filled.Search,
+                            contentDescription = if (isSearchActive) {
+                                stringResource(R.string.close_search)
+                            } else {
+                                stringResource(R.string.open_search)
+                            }
+                        )
+                    }
                     GenreDropdownAction(
                         availableGenres = availableGenres,
                         selectedGenre = selectedGenre,

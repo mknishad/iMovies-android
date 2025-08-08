@@ -29,6 +29,15 @@ interface MovieDao {
     @Query("SELECT * FROM movies WHERE genres LIKE :genreQuery ORDER BY year DESC, title ASC")
     fun getMoviesByGenre(genreQuery: String): PagingSource<Int, Movie>
 
+    // Get movies by genre, ordered by year and title
+    @Query("""
+        SELECT * FROM movies
+        WHERE (:genreName IS NULL OR :genreName = '' OR genres LIKE '%' || :genreName || '%')
+        AND (:query IS NULL OR :query = '' OR title LIKE '%' || :query || '%')
+        ORDER BY year DESC, title ASC
+    """)
+    fun getMoviesByGenreAndQuery(genreName: String?, query: String?): PagingSource<Int, Movie>
+
     // Get favorite movies, ordered by year and title
     @Query("SELECT * FROM movies WHERE isFavorite = 1 ORDER BY year DESC, title ASC")
     fun getWishlist(): PagingSource<Int, Movie>

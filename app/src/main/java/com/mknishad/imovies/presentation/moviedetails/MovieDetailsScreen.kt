@@ -43,6 +43,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import coil3.request.error
+import coil3.request.placeholder
 import com.mknishad.imovies.R
 import com.mknishad.imovies.domain.model.Movie
 import com.mknishad.imovies.presentation.components.AnimatedFavoriteIcon
@@ -95,6 +97,8 @@ fun MovieDetailsContent(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(state.movie?.posterUrl) // Fallback to poster if no backdrop
                     .crossfade(true)
+                    .placeholder(R.mipmap.ic_launcher_foreground)
+                    .error(R.mipmap.ic_launcher_foreground)
                     .build(),
                 contentDescription = "Movie Backdrop",
                 contentScale = ContentScale.Crop,
@@ -113,8 +117,8 @@ fun MovieDetailsContent(
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current).data(state.movie?.posterUrl)
                         .crossfade(true)
-                        // .placeholder(R.drawable.poster_placeholder)
-                        // .error(R.drawable.poster_error)
+                        .placeholder(R.mipmap.ic_launcher_foreground)
+                        .error(R.mipmap.ic_launcher_foreground)
                         .build(),
                     contentDescription = state.movie?.title,
                     contentScale = ContentScale.Fit,

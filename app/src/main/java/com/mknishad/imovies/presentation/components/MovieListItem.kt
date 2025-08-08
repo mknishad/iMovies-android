@@ -29,6 +29,9 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import coil3.request.error
+import coil3.request.placeholder
+import com.mknishad.imovies.R
 import com.mknishad.imovies.domain.model.Movie
 import com.mknishad.imovies.presentation.ui.theme.IMoviesTheme
 
@@ -55,7 +58,10 @@ fun MovieListItem(
             // Movie Poster
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current).data(movie.posterUrl)
-                    .crossfade(true).build(),
+                    .crossfade(true)
+                    .placeholder(R.mipmap.ic_launcher_foreground)
+                    .error(R.mipmap.ic_launcher_foreground)
+                    .build(),
                 contentDescription = movie.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

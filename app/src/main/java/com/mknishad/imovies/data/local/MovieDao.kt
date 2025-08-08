@@ -1,11 +1,13 @@
 package com.mknishad.imovies.data.local
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.mknishad.imovies.data.local.entity.MovieEntity
+import com.mknishad.imovies.domain.model.Movie
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -21,11 +23,11 @@ interface MovieDao {
 
     // Get all movies, ordered by year and title
     @Query("SELECT * FROM movieentity ORDER BY year DESC, title ASC")
-    fun getAllMovies(): Flow<List<MovieEntity>> // Flow for reactive updates
+    fun getAllMovies(): PagingSource<Int, Movie>
 
     // Get favorite movies, ordered by year and title
     @Query("SELECT * FROM movieentity WHERE isFavorite = 1 ORDER BY year DESC, title ASC")
-    fun getWishlist(): Flow<List<MovieEntity>> // Flow for reactive updates
+    fun getWishlist(): PagingSource<Int, Movie>
 
     // Get movie by ID
     @Query("SELECT * FROM movieentity WHERE id = :movieId")
@@ -34,5 +36,4 @@ interface MovieDao {
     // Add to / remove from the wishlist
     @Update
     suspend fun updateMovie(movie: MovieEntity)
-
 }

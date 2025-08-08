@@ -60,7 +60,7 @@ fun SplashContent(
             Button(onClick = { onRetry() }) {
                 Text(text = "Retry")
             }
-        } else {
+        } else if (state.isLoadFinished) {
             onNavigateForward()
         }
     }

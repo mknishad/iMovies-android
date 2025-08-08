@@ -10,6 +10,11 @@ interface MovieRepository {
     suspend fun getMoviesFromNetwork(): List<Movie>
     fun getMoviesFromDatabase(): Flow<PagingData<Movie>>
     fun getMoviesByGenre(selectedGenre: String? = null): Flow<PagingData<Movie>>
+    fun getMoviesByGenreAndQuery(
+        genreName: String? = null,
+        searchQuery: String? = null
+    ): Flow<PagingData<Movie>>
+
     fun getWishlist(): Flow<PagingData<Movie>>
     fun getMovieById(movieId: Int): Flow<Movie?>
     suspend fun toggleFavorite(movie: Movie)

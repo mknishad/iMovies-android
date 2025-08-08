@@ -17,12 +17,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -43,146 +48,171 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.mknishad.imovies.R
 import com.mknishad.imovies.domain.model.Movie
+import com.mknishad.imovies.presentation.main.Screen
 import com.mknishad.imovies.presentation.moviedetails.components.GenreChip
 import com.mknishad.imovies.presentation.moviedetails.components.SectionTitle
 import com.mknishad.imovies.presentation.ui.theme.IMoviesTheme
 
 
 @Composable
-fun MovieDetailsScreen() {
+fun MovieDetailsScreen(onNavigateBack: () -> Unit) {
     val viewModel = hiltViewModel<MovieDetailsViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    MovieDetailsContent(state, viewModel::toggleWishlist)
+    MovieDetailsContent(state, onNavigateBack, viewModel::toggleWishlist)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MovieDetailsContent(state: MovieDetailsState, onFavoriteClick: (Movie) -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()) // Make the content scrollable
-            .padding(bottom = 16.dp) // Padding at the very bottom of scrollable content
-    ) {
-        //Optional: Backdrop Image
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(state.movie?.posterUrl) // Fallback to poster if no backdrop
-                .crossfade(true)
-                .build(),
-            contentDescription = "Movie Backdrop",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(220.dp)
-                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp), verticalAlignment = Alignment.Top
-        ) {
-            // Poster Image
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current).data(state.movie?.posterUrl)
-                    .crossfade(true)
-                    // .placeholder(R.drawable.poster_placeholder)
-                    // .error(R.drawable.poster_error)
-                    .build(),
-                contentDescription = state.movie?.title,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .width(130.dp)
-                    .aspectRatio(2f / 3f)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(
-                        MaterialTheme.colorScheme.onSurface.copy(
-                            alpha = 0.1f
+fun MovieDetailsContent(
+    state: MovieDetailsState,
+    onNavigateBack: () -> Unit,
+    onFavoriteClick: (Movie) -> Unit
+) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(stringResource(Screen.MovieDetails.title))
+                },
+                colors = TopAppBarDefaults.mediumTopAppBarColors(MaterialTheme.colorScheme.primaryContainer),
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back_button)
                         )
-                    )
+                    }
+                }
+            )
+        }) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()) // Make the content scrollable
+                .padding(innerPadding)
+                .padding(bottom = 16.dp)// Padding at the very bottom of scrollable content
+        ) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(state.movie?.posterUrl) // Fallback to poster if no backdrop
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "Movie Backdrop",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(220.dp)
+                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
             )
 
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // Title, Year, Runtime, Director
-            Column(
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp), verticalAlignment = Alignment.Top
             ) {
-                Text(
-                    text = state.movie?.title ?: "",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+                // Poster Image
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current).data(state.movie?.posterUrl)
+                        .crossfade(true)
+                        // .placeholder(R.drawable.poster_placeholder)
+                        // .error(R.drawable.poster_error)
+                        .build(),
+                    contentDescription = state.movie?.title,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .width(130.dp)
+                        .aspectRatio(2f / 3f)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(
+                            MaterialTheme.colorScheme.onSurface.copy(
+                                alpha = 0.1f
+                            )
+                        )
                 )
-                Text(
-                    text = "Year: ${state.movie?.year}", style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = "Runtime: ${state.movie?.runtime}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = "Director: ${state.movie?.director}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                IconButton(
-                    onClick = {
-                        state.movie?.let {
-                            onFavoriteClick(it)
-                        }
-                    }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                // Title, Year, Runtime, Director
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Icon(
-                        imageVector = if (state.movie?.isFavorite == 1) {
-                            Icons.Default.Favorite
-                        } else {
-                            Icons.Default.FavoriteBorder
-                        },
-                        contentDescription = if (state.movie?.isFavorite == 1) {
-                            stringResource(R.string.remove_from_favorites)
-                        } else {
-                            stringResource(R.string.add_to_favorites)
-                        },
-                        tint = Color.Red
+                    Text(
+                        text = state.movie?.title ?: "",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
                     )
+                    Text(
+                        text = "Year: ${state.movie?.year}",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = "Runtime: ${state.movie?.runtime}",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = "Director: ${state.movie?.director}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    IconButton(
+                        onClick = {
+                            state.movie?.let {
+                                onFavoriteClick(it)
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = if (state.movie?.isFavorite == 1) {
+                                Icons.Default.Favorite
+                            } else {
+                                Icons.Default.FavoriteBorder
+                            },
+                            contentDescription = if (state.movie?.isFavorite == 1) {
+                                stringResource(R.string.remove_from_favorites)
+                            } else {
+                                stringResource(R.string.add_to_favorites)
+                            },
+                            tint = Color.Red
+                        )
+                    }
                 }
             }
+
+            // Genres
+            SectionTitle(title = "Genres")
+            state.movie?.genres?.let { genres ->
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(genres.size) { index ->
+                        GenreChip(genres[index])
+                    }
+                }
+            } ?: Text("N/A")
+
+            // Plot Summary
+            SectionTitle(title = "Plot Summary")
+            Text(
+                text = state.movie?.plot ?: "N/A",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+
+            // Actors
+            SectionTitle(title = "Cast")
+            Text(
+                // Assuming actors is a comma-separated string. If it's a list, adapt accordingly.
+                text = state.movie?.actors ?: "N/A",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+
+            // Add more sections as needed (e.g., Ratings, Reviews, Similar Movies)
+            Spacer(modifier = Modifier.height(24.dp)) // Extra space at the end
         }
-
-        // Genres
-        SectionTitle(title = "Genres")
-        state.movie?.genres?.let { genres ->
-            LazyRow(
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(genres.size) { index ->
-                    GenreChip(genres[index])
-                }
-            }
-        } ?: Text("N/A")
-
-        // Plot Summary
-        SectionTitle(title = "Plot Summary")
-        Text(
-            text = state.movie?.plot ?: "N/A",
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-        )
-
-        // Actors
-        SectionTitle(title = "Cast")
-        Text(
-            // Assuming actors is a comma-separated string. If it's a list, adapt accordingly.
-            text = state.movie?.actors ?: "N/A",
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-        )
-
-        // Add more sections as needed (e.g., Ratings, Reviews, Similar Movies)
-        Spacer(modifier = Modifier.height(24.dp)) // Extra space at the end
     }
 }
 
@@ -204,6 +234,7 @@ private fun MovieDetailsContentPreview() {
                     actors = "Render McState, Effect Handler, Pixel Perfect"
                 )
             ),
+            onNavigateBack = {},
             onFavoriteClick = {}
         )
     }

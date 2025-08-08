@@ -1,10 +1,10 @@
-package com.mknishad.imovies.presentation.movielist
+package com.mknishad.imovies.presentation.wishlist
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -17,7 +17,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
@@ -30,39 +29,38 @@ import com.mknishad.imovies.presentation.main.Screen
 
 
 @Composable
-fun MovieListScreen(onMovieClick: (Movie) -> Unit, onWishlistClick: () -> Unit) {
-    val viewModel = hiltViewModel<MovieListViewModel>()
+fun WishlistScreen(onMovieClick: (Movie) -> Unit, onNavigateBack: () -> Unit) {
+    val viewModel = hiltViewModel<WishlistViewModel>()
     val movies = viewModel.movies.collectAsLazyPagingItems()
 
-    MovieListContent(
+    WishlistContent(
         movies = movies,
         onMovieClick = onMovieClick,
-        onWishlistClick = onWishlistClick,
-        onFavoriteClick = viewModel::toggleWishlist
+        onFavoriteClick = viewModel::toggleWishlist,
+        onNavigateBack = onNavigateBack
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MovieListContent(
+fun WishlistContent(
     movies: LazyPagingItems<Movie>,
     onMovieClick: (Movie) -> Unit,
-    onWishlistClick: () -> Unit,
-    onFavoriteClick: (Movie) -> Unit
+    onFavoriteClick: (Movie) -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(stringResource(Screen.MovieList.title))
+                    Text(stringResource(Screen.Wishlist.title))
                 },
                 colors = TopAppBarDefaults.mediumTopAppBarColors(MaterialTheme.colorScheme.primaryContainer),
-                actions = {
-                    IconButton(onClick = { onWishlistClick() }) {
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
                         Icon(
-                            imageVector = Icons.Filled.Favorite,
-                            contentDescription = stringResource(R.string.back_button),
-                            tint = Color.Red
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back_button)
                         )
                     }
                 }

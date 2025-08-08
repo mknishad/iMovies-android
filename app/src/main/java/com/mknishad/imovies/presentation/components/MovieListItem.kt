@@ -135,7 +135,7 @@ fun MovieListItem(
                 Text(
                     text = movie.plot,
                     style = MaterialTheme.typography.bodySmall,
-                    maxLines = 3,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )

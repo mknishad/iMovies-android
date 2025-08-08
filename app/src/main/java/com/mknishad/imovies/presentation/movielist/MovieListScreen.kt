@@ -6,14 +6,14 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.mknishad.imovies.R
 import com.mknishad.imovies.domain.model.Movie
 import com.mknishad.imovies.presentation.components.MovieList
 
@@ -21,7 +21,6 @@ import com.mknishad.imovies.presentation.components.MovieList
 @Composable
 fun MovieListScreen(onMovieClick: (Movie) -> Unit) {
     val viewModel = hiltViewModel<MovieListViewModel>()
-    val state by viewModel.state.collectAsStateWithLifecycle()
     val movies = viewModel.movies.collectAsLazyPagingItems()
 
     MovieListContent(movies, onMovieClick, viewModel::toggleWishlist)
@@ -43,10 +42,8 @@ fun MovieListContent(
                 modifier = Modifier.align(Alignment.Center),
                 color = MaterialTheme.colorScheme.error
             )
-            // Optionally add a retry button:
-            // Button(onClick = { lazyMovieItems.retry() }) { Text("Retry") }
         } else if (movies.loadState.refresh is LoadState.NotLoading && movies.itemCount == 0) {
-            Text("No movies found.", modifier = Modifier.align(Alignment.Center))
+            Text(stringResource(R.string.no_movies_found), modifier = Modifier.align(Alignment.Center))
         } else {
             MovieList(
                 movies = movies,

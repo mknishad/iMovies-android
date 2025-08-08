@@ -27,7 +27,7 @@ interface MovieDao {
 
     // Get favorite movies, ordered by year and title
     @Query("SELECT * FROM movieentity WHERE isFavorite = 1 ORDER BY year DESC, title ASC")
-    fun getWishlist(): Flow<List<MovieEntity>> // Flow for reactive updates
+    fun getWishlist(): PagingSource<Int, Movie>
 
     // Get movie by ID
     @Query("SELECT * FROM movieentity WHERE id = :movieId")
@@ -36,5 +36,4 @@ interface MovieDao {
     // Add to / remove from the wishlist
     @Update
     suspend fun updateMovie(movie: MovieEntity)
-
 }

@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class MovieListViewModel @Inject constructor(
-    private val getMoviesFromDatabase: GetMoviesFromDatabaseUseCase,
+    getMoviesFromDatabase: GetMoviesFromDatabaseUseCase,
     private val toggleFavorite: ToggleFavoriteUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(MovieListState())

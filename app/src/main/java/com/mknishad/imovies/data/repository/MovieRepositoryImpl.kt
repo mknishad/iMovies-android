@@ -29,16 +29,23 @@ class MovieRepositoryImpl @Inject constructor(
     override fun getMoviesFromDatabase(): Flow<PagingData<Movie>> {
         return Pager(
             config = PagingConfig(
-                pageSize = 10,
+                pageSize = 5,
                 enablePlaceholders = false,
-                initialLoadSize = 10
+                initialLoadSize = 5
             ),
             pagingSourceFactory = { dao.getAllMovies() }
         ).flow
     }
 
-    override fun getWishlist(): Flow<List<Movie>> {
-        return dao.getWishlist().map { entities -> entities.map { it.toMovie() } }
+    override fun getWishlist(): Flow<PagingData<Movie>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 5,
+                enablePlaceholders = false,
+                initialLoadSize = 5
+            ),
+            pagingSourceFactory = { dao.getWishlist() }
+        ).flow
     }
 
     override fun getMovieById(movieId: Int): Flow<Movie?> {

@@ -29,9 +29,9 @@ class MovieRepositoryImpl @Inject constructor(
     override fun getMoviesFromDatabase(): Flow<PagingData<Movie>> {
         return Pager(
             config = PagingConfig(
-                pageSize = 5,
-                enablePlaceholders = false,
-                initialLoadSize = 5
+                pageSize = 10,
+                enablePlaceholders = true,
+                initialLoadSize = 10
             ),
             pagingSourceFactory = { dao.getAllMovies() }
         ).flow
@@ -40,9 +40,9 @@ class MovieRepositoryImpl @Inject constructor(
     override fun getWishlist(): Flow<PagingData<Movie>> {
         return Pager(
             config = PagingConfig(
-                pageSize = 5,
-                enablePlaceholders = false,
-                initialLoadSize = 5
+                pageSize = 10,
+                enablePlaceholders = true,
+                initialLoadSize = 10
             ),
             pagingSourceFactory = { dao.getWishlist() }
         ).flow

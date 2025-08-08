@@ -23,7 +23,11 @@ fun MovieListScreen(onMovieClick: (Movie) -> Unit) {
     val viewModel = hiltViewModel<MovieListViewModel>()
     val movies = viewModel.movies.collectAsLazyPagingItems()
 
-    MovieListContent(movies, onMovieClick, viewModel::toggleWishlist)
+    MovieListContent(
+        movies = movies,
+        onMovieClick = onMovieClick,
+        onFavoriteClick = viewModel::toggleWishlist
+    )
 }
 
 @Composable
@@ -43,8 +47,11 @@ fun MovieListContent(
                 color = MaterialTheme.colorScheme.error
             )
         } else if (movies.loadState.refresh is LoadState.NotLoading && movies.itemCount == 0) {
-            Text(stringResource(R.string.no_movies_found), modifier = Modifier.align(Alignment.Center))
-        } else {
+            Text(
+                stringResource(R.string.no_movies_found),
+                modifier = Modifier.align(Alignment.Center)
+            )
+        } else if (movies.itemCount > 0) {
             MovieList(
                 movies = movies,
                 onMovieClick = { onMovieClick(it) },

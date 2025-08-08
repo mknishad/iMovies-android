@@ -44,10 +44,11 @@ import com.mknishad.imovies.presentation.ui.theme.IMoviesTheme
 fun MovieListItem(
     movie: Movie,
     onItemClick: (Movie) -> Unit,
-    onFavoriteClick: (Movie) -> Unit
+    onFavoriteClick: (Movie) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable { onItemClick(movie) },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),

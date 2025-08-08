@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {
     suspend fun getMovieCount(): Int
+    fun getWishlistCount(): Flow<Int>
     suspend fun getMoviesFromNetwork(): List<Movie>
     fun getMoviesFromDatabase(): Flow<PagingData<Movie>>
     fun getMoviesByGenre(selectedGenre: String? = null): Flow<PagingData<Movie>>

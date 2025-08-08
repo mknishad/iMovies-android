@@ -26,6 +26,10 @@ class MovieRepositoryImpl @Inject constructor(
         return movieDao.getMovieCount()
     }
 
+    override fun getWishlistCount(): Flow<Int> {
+        return movieDao.getWishlistCount()
+    }
+
     override suspend fun getMoviesFromNetwork(): List<Movie> {
         val movies = api.getMovies().movies
         movieDao.insertMovies(movies.map { it.toMovieEntity() })

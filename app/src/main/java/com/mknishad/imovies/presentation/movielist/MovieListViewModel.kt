@@ -8,6 +8,7 @@ import com.mknishad.imovies.domain.model.Genre
 import com.mknishad.imovies.domain.model.Movie
 import com.mknishad.imovies.domain.usecases.GetGenresUseCase
 import com.mknishad.imovies.domain.usecases.GetMoviesByGenreAndQueryUseCase
+import com.mknishad.imovies.domain.usecases.GetWishlistCountUseCase
 import com.mknishad.imovies.domain.usecases.ToggleFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -30,6 +31,7 @@ import kotlinx.coroutines.launch
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class MovieListViewModel @Inject constructor(
+    private val getWishlistCount: GetWishlistCountUseCase,
     private val getMoviesByGenreAndQuery: GetMoviesByGenreAndQueryUseCase,
     private val getGenres: GetGenresUseCase,
     private val toggleFavorite: ToggleFavoriteUseCase
@@ -46,6 +48,7 @@ class MovieListViewModel @Inject constructor(
 
     init {
         loadInitialGenres()
+        observeWishlistCount()
 
         // Combine selectedGenre and debounced searchQuery to trigger movie updates
         viewModelScope.launch {
@@ -75,17 +78,21 @@ class MovieListViewModel @Inject constructor(
     }
 
     private fun loadInitialGenres() {
-        viewModelScope.launch {
-            getGenres().onEach { genres ->
-                _state.update {
-                    it.copy(
-                        availableGenres = listOf(Genre.ALL) + genres,
-                        selectedGenre = Genre.ALL, // Default selection
-                        isLoading = true // Start loading movies
-                    )
-                }
-            }.launchIn(viewModelScope)
-        }
+        getGenres().onEach { genres ->
+            _state.update {
+                it.copy(
+                    availableGenres = listOf(Genre.ALL) + genres,
+                    selectedGenre = Genre.ALL, // Default selection
+                    isLoading = true // Start loading movies
+                )
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun observeWishlistCount() {
+        getWishlistCount().onEach { count ->
+            _state.update { it.copy(wishlistCount = count) }
+        }.launchIn(viewModelScope)
     }
 
     fun onSearchQueryChanged(query: String) {

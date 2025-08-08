@@ -10,5 +10,5 @@ enum class Screen(@StringRes val title: Int) {
     Splash(title = R.string.app_name),
     MovieList(title = R.string.app_name),
     MovieDetails(title = R.string.movie_details),
-    Wishlist(title = R.string.wish_list)
+    Wishlist(title = R.string.wishlist)
 }

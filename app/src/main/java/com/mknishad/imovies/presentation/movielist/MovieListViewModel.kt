@@ -8,7 +8,7 @@ import com.mknishad.imovies.domain.model.Genre
 import com.mknishad.imovies.domain.model.Movie
 import com.mknishad.imovies.domain.usecases.GetGenresUseCase
 import com.mknishad.imovies.domain.usecases.GetMoviesByGenreAndQueryUseCase
-import com.mknishad.imovies.domain.usecases.GetMoviesByGenreUseCase
+import com.mknishad.imovies.domain.usecases.GetWishlistCountUseCase
 import com.mknishad.imovies.domain.usecases.ToggleFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -32,7 +31,7 @@ import kotlinx.coroutines.launch
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class MovieListViewModel @Inject constructor(
-    private val getMoviesByGenre: GetMoviesByGenreUseCase,
+    private val getWishlistCount: GetWishlistCountUseCase,
     private val getMoviesByGenreAndQuery: GetMoviesByGenreAndQueryUseCase,
     private val getGenres: GetGenresUseCase,
     private val toggleFavorite: ToggleFavoriteUseCase
@@ -49,6 +48,7 @@ class MovieListViewModel @Inject constructor(
 
     init {
         loadInitialGenres()
+        observeWishlistCount()
 
         // Combine selectedGenre and debounced searchQuery to trigger movie updates
         viewModelScope.launch {
@@ -60,12 +60,13 @@ class MovieListViewModel @Inject constructor(
             }.flatMapLatest { (genre, query) ->
                 val genreToFilter = if (genre == Genre.ALL) null else genre?.name
                 _state.update { it.copy(isLoading = true) } // Show loading for new filter/search
-                getMoviesByGenreAndQuery(genreToFilter, query)
+                currentMoviesFlow = getMoviesByGenreAndQuery(genreToFilter, query)
                     .cachedIn(viewModelScope)
+                currentMoviesFlow
             }.collect { pagingData ->
                 _state.update {
                     it.copy(
-                        movies = flowOf(pagingData), // Wrap in flowOf for consistency if needed, or assign directly
+                        movies = currentMoviesFlow, // Wrap in flowOf for consistency if needed, or assign directly
                         isLoading = false,
                         error = null
                     )
@@ -77,17 +78,21 @@ class MovieListViewModel @Inject constructor(
     }
 
     private fun loadInitialGenres() {
-        viewModelScope.launch {
-            getGenres().onEach { genres ->
-                _state.update {
-                    it.copy(
-                        availableGenres = listOf(Genre.ALL) + genres,
-                        selectedGenre = Genre.ALL, // Default selection
-                        isLoading = true // Start loading movies
-                    )
-                }
-            }.launchIn(viewModelScope)
-        }
+        getGenres().onEach { genres ->
+            _state.update {
+                it.copy(
+                    availableGenres = listOf(Genre.ALL) + genres,
+                    selectedGenre = Genre.ALL, // Default selection
+                    isLoading = true // Start loading movies
+                )
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun observeWishlistCount() {
+        getWishlistCount().onEach { count ->
+            _state.update { it.copy(wishlistCount = count) }
+        }.launchIn(viewModelScope)
     }
 
     fun onSearchQueryChanged(query: String) {
@@ -95,6 +100,7 @@ class MovieListViewModel @Inject constructor(
         _searchQueryInternal.value = query // Update the internal flow that's debounced
     }
 
+    // Handle toggle search action
     fun onToggleSearch() {
         val newSearchState = !_state.value.isSearchActive
         _state.update { it.copy(isSearchActive = newSearchState) }
@@ -104,23 +110,7 @@ class MovieListViewModel @Inject constructor(
         }
     }
 
-    private fun updateMoviesForGenre(genre: Genre?) {
-        // Only create a new flow if the genre actually changes
-        // or if the flow hasn't been initialized yet.
-        val genreIdToFilter = if (genre == Genre.ALL) null else genre?.name
-
-        currentMoviesFlow = getMoviesByGenre(genreIdToFilter)
-            .cachedIn(viewModelScope)
-
-        _state.update {
-            it.copy(
-                movies = currentMoviesFlow,
-                isLoading = false, // PagingData will handle its own loading states
-                error = null
-            )
-        }
-    }
-
+    // Handle toggle wishlist action
     fun toggleWishlist(movie: Movie) {
         viewModelScope.launch {
             toggleFavorite(movie)
@@ -137,8 +127,6 @@ class MovieListViewModel @Inject constructor(
                         isDropdownExpanded = false, // Close dropdown
                     )
                 }
-                // Trigger movie list update for the new genre
-                //updateMoviesForGenre(genre)
             }
         }
     }

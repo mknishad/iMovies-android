@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun GenreChip(genre: String) {
     SuggestionChip(
-        onClick = { /* Handle genre click if needed, e.g., navigate to movies by genre */ },
+        onClick = { /* Handle chip click */ },
         label = { Text(genre, style = MaterialTheme.typography.labelSmall) },
         shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
         colors = SuggestionChipDefaults.suggestionChipColors(

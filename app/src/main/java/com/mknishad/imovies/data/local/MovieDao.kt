@@ -21,6 +21,10 @@ interface MovieDao {
     @Query("SELECT COUNT(*) FROM movies")
     suspend fun getMovieCount(): Int
 
+    // Get wishlist count
+    @Query("SELECT COUNT(*) FROM movies WHERE isFavorite = 1")
+    fun getWishlistCount(): Flow<Int>
+
     // Get all movies, ordered by year and title
     @Query("SELECT * FROM movies ORDER BY year DESC, title ASC")
     fun getAllMovies(): PagingSource<Int, Movie>

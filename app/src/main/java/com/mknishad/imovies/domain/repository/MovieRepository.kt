@@ -14,9 +14,9 @@ interface MovieRepository {
         genreName: String? = null,
         searchQuery: String? = null
     ): Flow<PagingData<Movie>>
-
-    fun getWishlist(): Flow<PagingData<Movie>>
     fun getMovieById(movieId: Int): Flow<Movie?>
+    fun getWishlistCount(): Flow<Int>
+    fun getWishlist(): Flow<PagingData<Movie>>
     suspend fun toggleFavorite(movie: Movie)
     fun getAllGenres(): Flow<List<Genre>>
 }

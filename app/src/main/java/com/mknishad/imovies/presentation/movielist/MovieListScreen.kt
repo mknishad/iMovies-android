@@ -6,12 +6,15 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -68,7 +71,8 @@ fun MovieListScreen(onMovieClick: (Movie) -> Unit, onWishlistClick: () -> Unit) 
         isSearchActive = state.isSearchActive,
         searchQuery = state.searchQuery,
         onSearchQueryChanged = viewModel::onSearchQueryChanged,
-        onToggleSearch = viewModel::onToggleSearch
+        onToggleSearch = viewModel::onToggleSearch,
+        wishlistCount = state.wishlistCount
     )
 }
 
@@ -88,7 +92,8 @@ fun MovieListContent(
     isSearchActive: Boolean,
     searchQuery: String,
     onSearchQueryChanged: (String) -> Unit,
-    onToggleSearch: () -> Unit
+    onToggleSearch: () -> Unit,
+    wishlistCount: Int
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
@@ -119,12 +124,12 @@ fun MovieListContent(
                                 .weight(1f) // Takes available space
                                 .padding(horizontal = 8.dp, vertical = 2.dp)
                                 .focusRequester(focusRequester),
-                            placeholder = { Text("Search movies...") },
+                            placeholder = { Text(stringResource(R.string.search_movies)) },
                             singleLine = true,
                             leadingIcon = {
                                 Icon(
                                     Icons.Filled.Search,
-                                    contentDescription = "Search Icon"
+                                    contentDescription = stringResource(R.string.search_icon)
                                 )
                             },
                             trailingIcon = {
@@ -132,20 +137,17 @@ fun MovieListContent(
                                     IconButton(onClick = { onSearchQueryChanged("") }) {
                                         Icon(
                                             Icons.Filled.Close,
-                                            contentDescription = "Clear search"
+                                            contentDescription = stringResource(R.string.clear_search)
                                         )
                                     }
                                 }
                             },
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                            keyboardActions = KeyboardActions(onSearch = {
-                                keyboardController?.hide()
-                                // Optionally, trigger search immediately or rely on debounce
-                            }),
-                            /*colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = Color.Transparent, // Or your theme color
-                                unfocusedBorderColor = Color.Transparent
-                            )*/
+                            keyboardActions = KeyboardActions(
+                                onSearch = {
+                                    keyboardController?.hide()
+                                }
+                            ),
                         )
                     }
 
@@ -168,12 +170,26 @@ fun MovieListContent(
                         onGenreSelected = onGenreSelected,
                         onDismiss = onDismiss
                     )
-                    IconButton(onClick = { onWishlistClick() }) {
-                        Icon(
-                            imageVector = Icons.Filled.Favorite,
-                            contentDescription = stringResource(R.string.back_button),
-                            tint = Color.Red
-                        )
+                    IconButton(
+                        onClick = { onWishlistClick() },
+                        modifier = Modifier
+                            .size(56.dp)
+                            .padding(end = 8.dp)
+                    ) {
+                        BadgedBox(badge = {
+                            if (wishlistCount > 0) {
+                                Badge(
+                                    containerColor = Color.Black.copy(alpha = 0.6f),
+                                    contentColor = Color.White
+                                ) { Text(wishlistCount.toString()) }
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Filled.Favorite,
+                                contentDescription = stringResource(R.string.wishlist),
+                                tint = Color.Red
+                            )
+                        }
                     }
                 }
             )

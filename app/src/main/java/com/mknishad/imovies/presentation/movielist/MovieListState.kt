@@ -16,8 +16,11 @@ data class MovieListState(
     val isDropdownExpanded: Boolean = false,
 
     // Search related state
-    val searchQuery: String = "", // New state for search query
+    val searchQuery: String = "", // State for search query
     val isSearchActive: Boolean = false, // To control visibility/focus of search bar
+
+    // State for wishlist count
+    val wishlistCount: Int = 0,
 
     // Loading/Error states for the main list
     val isLoading: Boolean = true, // For initial load or full screen loading

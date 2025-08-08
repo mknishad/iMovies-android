@@ -16,7 +16,7 @@ import com.mknishad.imovies.presentation.wishlist.WishlistScreen
 
 
 @Composable
-fun IMovieApp(
+fun IMoviesApp(
     navController: NavHostController = rememberNavController()
 ) {
     NavHost(

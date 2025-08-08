@@ -18,8 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,7 +31,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -46,8 +43,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import coil3.request.error
+import coil3.request.placeholder
 import com.mknishad.imovies.R
 import com.mknishad.imovies.domain.model.Movie
+import com.mknishad.imovies.presentation.components.AnimatedFavoriteIcon
 import com.mknishad.imovies.presentation.main.Screen
 import com.mknishad.imovies.presentation.moviedetails.components.GenreChip
 import com.mknishad.imovies.presentation.moviedetails.components.SectionTitle
@@ -97,6 +97,8 @@ fun MovieDetailsContent(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(state.movie?.posterUrl) // Fallback to poster if no backdrop
                     .crossfade(true)
+                    .placeholder(R.mipmap.ic_launcher_foreground)
+                    .error(R.mipmap.ic_launcher_foreground)
                     .build(),
                 contentDescription = "Movie Backdrop",
                 contentScale = ContentScale.Crop,
@@ -115,8 +117,8 @@ fun MovieDetailsContent(
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current).data(state.movie?.posterUrl)
                         .crossfade(true)
-                        // .placeholder(R.drawable.poster_placeholder)
-                        // .error(R.drawable.poster_error)
+                        .placeholder(R.mipmap.ic_launcher_foreground)
+                        .error(R.mipmap.ic_launcher_foreground)
                         .build(),
                     contentDescription = state.movie?.title,
                     contentScale = ContentScale.Fit,
@@ -156,27 +158,14 @@ fun MovieDetailsContent(
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
-                    IconButton(
+                    AnimatedFavoriteIcon(
+                        isFavorite = state.movie?.isFavorite == 1,
                         onClick = {
                             state.movie?.let {
                                 onFavoriteClick(it)
                             }
                         }
-                    ) {
-                        Icon(
-                            imageVector = if (state.movie?.isFavorite == 1) {
-                                Icons.Default.Favorite
-                            } else {
-                                Icons.Default.FavoriteBorder
-                            },
-                            contentDescription = if (state.movie?.isFavorite == 1) {
-                                stringResource(R.string.remove_from_favorites)
-                            } else {
-                                stringResource(R.string.add_to_favorites)
-                            },
-                            tint = Color.Red
-                        )
-                    }
+                    )
                 }
             }
 
@@ -204,13 +193,11 @@ fun MovieDetailsContent(
             // Actors
             SectionTitle(title = "Cast")
             Text(
-                // Assuming actors is a comma-separated string. If it's a list, adapt accordingly.
                 text = state.movie?.actors ?: "N/A",
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
 
-            // Add more sections as needed (e.g., Ratings, Reviews, Similar Movies)
             Spacer(modifier = Modifier.height(24.dp)) // Extra space at the end
         }
     }

@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">iMovies</string>
+    <string name="splash">Splash</string>
+    <string name="movie_list">Movie List</string>
+    <string name="movie_details">Movie Details</string>
+    <string name="wishlist">Wishlist</string>
+    <string name="back_button">Back Button</string>
+    <string name="favorite_button">Favorite Button</string>
+    <string name="add_to_favorites">Add to Favorites</string>
+    <string name="remove_from_favorites">Remove from Favorites</string>
+    <string name="no_movies_found">No movies found.</string>
+    <string name="error_loading_more">Error loading more.</string>
+    <string name="filter_by_genre">Filter by genre</string>
+    <string name="close_search">Close search</string>
+    <string name="open_search">Open search</string>
+    <string name="search_movies">Search movies...</string>
+    <string name="search_icon">Search Icon</string>
+    <string name="clear_search">Clear search</string>
+</resources>

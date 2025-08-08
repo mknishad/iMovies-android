@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.mknishad.imovies.data.local.Converters
 
-@Entity
+@Entity(tableName = "movies")
 @TypeConverters(Converters::class)
 data class MovieEntity(
     @PrimaryKey

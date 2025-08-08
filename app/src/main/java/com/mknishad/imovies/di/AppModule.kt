@@ -41,6 +41,6 @@ object AppModule {
     @Provides
     @Singleton
     fun provideMovieRepository(api: MovieApi, db: MovieDatabase): MovieRepository {
-        return MovieRepositoryImpl(api, db.movieDao)
+        return MovieRepositoryImpl(api, db.genreDao, db.movieDao)
     }
 }

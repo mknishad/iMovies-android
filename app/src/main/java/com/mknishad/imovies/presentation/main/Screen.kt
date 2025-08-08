@@ -1,4 +1,4 @@
-package com.mknishad.imovies.presentation
+package com.mknishad.imovies.presentation.main
 
 import androidx.annotation.StringRes
 import com.mknishad.imovies.R

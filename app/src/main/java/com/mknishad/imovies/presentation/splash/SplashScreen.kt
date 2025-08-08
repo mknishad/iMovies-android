@@ -11,7 +11,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -33,35 +38,44 @@ fun SplashScreen(onNavigateForward: () -> Unit) {
     SplashContent(state, viewModel::getMovies, onNavigateForward)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SplashContent(
     state: SplashState, onRetry: () -> Unit, onNavigateForward: () -> Unit
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(32.dp)
-    ) {
-        Spacer(modifier = Modifier.height(96.dp))
-        Image(
-            painter = painterResource(R.mipmap.ic_launcher_foreground),
-            contentDescription = stringResource(R.string.app_name),
-            modifier = Modifier.size(300.dp)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (state.isLoading) {
-            CircularProgressIndicator()
-        } else if (state.error.isNotBlank()) {
-            Text(text = state.error, textAlign = TextAlign.Center)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {},
+                colors = TopAppBarDefaults.mediumTopAppBarColors(MaterialTheme.colorScheme.surface),
+            )
+        }) { innerPadding ->
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(innerPadding)
+        ) {
+            Spacer(modifier = Modifier.height(96.dp))
+            Image(
+                painter = painterResource(R.mipmap.ic_launcher_foreground),
+                contentDescription = stringResource(R.string.app_name),
+                modifier = Modifier.size(300.dp)
+            )
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { onRetry() }) {
-                Text(text = "Retry")
+
+            if (state.isLoading) {
+                CircularProgressIndicator()
+            } else if (state.error.isNotBlank()) {
+                Text(text = state.error, textAlign = TextAlign.Center)
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(onClick = { onRetry() }) {
+                    Text(text = "Retry")
+                }
+            } else if (state.isLoadFinished) {
+                onNavigateForward()
             }
-        } else if (state.isLoadFinished) {
-            onNavigateForward()
         }
     }
 }

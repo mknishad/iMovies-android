@@ -3,10 +3,14 @@ package com.mknishad.imovies.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.mknishad.imovies.data.local.GenreDao
 import com.mknishad.imovies.data.local.MovieDao
+import com.mknishad.imovies.data.mappers.toGenre
+import com.mknishad.imovies.data.mappers.toGenreEntity
 import com.mknishad.imovies.data.mappers.toMovie
 import com.mknishad.imovies.data.mappers.toMovieEntity
 import com.mknishad.imovies.data.remote.MovieApi
+import com.mknishad.imovies.domain.model.Genre
 import com.mknishad.imovies.domain.model.Movie
 import com.mknishad.imovies.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow
@@ -14,15 +18,19 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class MovieRepositoryImpl @Inject constructor(
-    private val api: MovieApi, private val dao: MovieDao
+    private val api: MovieApi,
+    private val genreDao: GenreDao,
+    private val movieDao: MovieDao
 ) : MovieRepository {
     override suspend fun getMovieCount(): Int {
-        return dao.getMovieCount()
+        return movieDao.getMovieCount()
     }
 
     override suspend fun getMoviesFromNetwork(): List<Movie> {
         val movies = api.getMovies().movies
-        dao.insertMovies(movies.map { it.toMovieEntity() })
+        movieDao.insertMovies(movies.map { it.toMovieEntity() })
+        val genres = api.getMovies().genres.map { it.toGenreEntity() }
+        genreDao.insertGenres(genres)
         return movies.map { it.toMovie() }
     }
 
@@ -33,7 +41,28 @@ class MovieRepositoryImpl @Inject constructor(
                 enablePlaceholders = true,
                 initialLoadSize = 10
             ),
-            pagingSourceFactory = { dao.getAllMovies() }
+            pagingSourceFactory = { movieDao.getAllMovies() }
+        ).flow
+    }
+
+    override fun getMoviesByGenre(selectedGenre: String?): Flow<PagingData<Movie>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20,
+                enablePlaceholders = false,
+                initialLoadSize = 20
+            ),
+            pagingSourceFactory = {
+                if (selectedGenre.isNullOrBlank() || selectedGenre == "All") {
+                    movieDao.getAllMovies()
+                } else {
+                    // Prepare the query for LIKE. We need to match the genre as a whole word
+                    // or part of the comma-separated list.
+                    // Example: if genre is "Action", query should be "%Action%"
+                    val genreQuery = "%$selectedGenre%"
+                    movieDao.getMoviesByGenre(genreQuery)
+                }
+            }
         ).flow
     }
 
@@ -44,17 +73,21 @@ class MovieRepositoryImpl @Inject constructor(
                 enablePlaceholders = true,
                 initialLoadSize = 10
             ),
-            pagingSourceFactory = { dao.getWishlist() }
+            pagingSourceFactory = { movieDao.getWishlist() }
         ).flow
     }
 
     override fun getMovieById(movieId: Int): Flow<Movie?> {
-        return dao.getMovieById(movieId).map { it?.toMovie() }
+        return movieDao.getMovieById(movieId).map { it?.toMovie() }
     }
 
     override suspend fun toggleFavorite(movie: Movie) {
         val movieEntity = movie.toMovieEntity()
         movieEntity.isFavorite = if (movieEntity.isFavorite == 1) 0 else 1
-        dao.updateMovie(movieEntity)
+        movieDao.updateMovie(movieEntity)
+    }
+
+    override fun getAllGenres(): Flow<List<Genre>> {
+        return genreDao.getAllGenres().map { it.map { genreEntity -> genreEntity.toGenre() } }
     }
 }
